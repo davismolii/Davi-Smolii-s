@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Sustentabilidade Infantil 🌍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Container principal */
+        .game-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Tela de perguntas */
+        .question-screen {
+            background: linear-gradient(to bottom, #93c5fd, #86efac, #93c5fd);
+        }
+
+        /* Tela de resultado */
+        .result-screen {
+            background: linear-gradient(to bottom, #86efac, #bfdbfe, #86efac);
+        }
+
+        /* Card do jogo */
+        .game-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2rem;
+            max-width: 48rem;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-counter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .counter-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #16a34a;
+        }
+
+        .score-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #fce7f3;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+        }
+
+        .score-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #db2777;
+        }
+
+        /* Barra de progresso */
+        .progress-bar {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(to right, #4ade80, #3b82f6);
+            height: 1rem;
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+        }
+
+        /* Card da pergunta */
+        .question-card {
+            background: linear-gradient(to bottom right, #fefce8, #f0fdf4);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 4px solid #86efac;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-image {
+            width: 16rem;
+            height: 16rem;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text {
+            font-size: 1.875rem;
+            font-weight: bold;
+            text-align: center;
+            color: #1f2937;
+            line-height: 2.25rem;
+        }
+
+        /* Botões */
+        .answer-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .answer-button {
+            font-size: 1.875rem;
+            font-weight: bold;
+            padding: 1.5rem 3rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        .answer-button:hover {
+            transform: scale(1.05);
+        }
+
+        .true-button {
+            background-color: #22c55e;
+        }
+
+        .true-button:hover {
+            background-color: #16a34a;
+        }
+
+        .false-button {
+            background-color: #ef4444;
+        }
+
+        .false-button:hover {
+            background-color: #dc2626;
+        }
+
+        /* Feedback */
+        .feedback-container {
+            text-align: center;
+        }
+
+        .feedback-message {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 1rem;
+        }
+
+        .feedback-correct {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .feedback-incorrect {
+            background-color: #fed7aa;
+            color: #92400e;
+        }
+
+        .next-button {
+            background-color: #3b82f6;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 1rem 2.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .next-button:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
+        }
+
+        /* Tela de resultado */
+        .result-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2rem;
+            max-width: 42rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .result-title {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 1rem;
+        }
+
+        .result-score {
+            font-size: 3.75rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 1rem;
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            color: #374151;
+            margin-bottom: 2rem;
+        }
+
+        .restart-button {
+            background-color: #22c55e;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .restart-button:hover {
+            background-color: #16a34a;
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .game-card {
+                padding: 1.5rem;
+            }
+
+            .counter-text, .score-text {
+                font-size: 1.25rem;
+            }
+
+            .question-text {
+                font-size: 1.5rem;
+            }
+
+            .question-image {
+                width: 12rem;
+                height: 12rem;
+            }
+
+            .answer-button {
+                font-size: 1.5rem;
+                padding: 1rem 2rem;
+            }
+
+            .feedback-message {
+                font-size: 1.25rem;
+            }
+
+            .next-button {
+                font-size: 1.25rem;
+            }
+
+            .result-title {
+                font-size: 1.875rem;
+            }
+
+            .result-score {
+                font-size: 3rem;
+            }
+
+            .result-message {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Perguntas -->
+    <div id="questionScreen" class="game-container question-screen">
+        <div class="game-card">
+            <!-- Header -->
+            <div class="header">
+                <div class="question-counter">
+                    <span>🌿</span>
+                    <span class="counter-text" id="questionCounter">Pergunta 1 de 10</span>
+                </div>
+                <div class="score-badge">
+                    <span>❤️</span>
+                    <span class="score-text" id="scoreDisplay">0</span>
+                </div>
+            </div>
+
+            <!-- Barra de Progresso -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <!-- Card da Pergunta -->
+            <div class="question-card">
+                <div class="image-container">
+                    <img id="questionImage" src="" alt="Imagem da pergunta" class="question-image">
+                </div>
+                <p class="question-text" id="questionText"></p>
+            </div>
+
+            <!-- Botões de Resposta -->
+            <div id="answerButtons" class="answer-buttons">
+                <button class="answer-button true-button" onclick="handleAnswer(true)">
+                    ✓ VERDADEIRO
+                </button>
+                <button class="answer-button false-button" onclick="handleAnswer(false)">
+                    ✗ FALSO
+                </button>
+            </div>
+
+            <!-- Feedback -->
+            <div id="feedbackContainer" class="feedback-container hidden">
+                <div id="feedbackMessage" class="feedback-message"></div>
+                <button class="next-button" onclick="nextQuestion()">
+                    PRÓXIMA ➜
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Resultado -->
+    <div id="resultScreen" class="game-container result-screen hidden">
+        <div class="result-card">
+            <div class="result-icon">✨</div>
+            <h2 class="result-title">VOCÊ TERMINOU!</h2>
+            <p class="result-score" id="finalScore">0 de 10</p>
+            <p class="result-message" id="resultMessage"></p>
+            <button class="restart-button" onclick="restartGame()">
+                JOGAR DE NOVO! 🔄
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Dados das perguntas
+        const questions = [
+            {
+                id: 1,
+                text: "FECHAR A TORNEIRA ENQUANTO ESCOVO OS DENTES AJUDA O PLANETA",
+                answer: true,
+                image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "ISSO MESMO! Economizar água é muito importante! 💧",
+                    incorrect: "Ops! Fechar a torneira economiza água e ajuda muito! 💧"
+                }
+            },
+            {
+                id: 2,
+                text: "POSSO JOGAR LIXO NO CHÃO DA RUA",
+                answer: false,
+                image: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "MUITO BEM! O lixo vai sempre na lixeira! 🌟",
+                    incorrect: "Não! O lixo deve ir na lixeira para manter tudo limpinho! 🌟"
+                }
+            },
+            {
+                id: 3,
+                text: "APAGAR A LUZ QUANDO SAIO DO QUARTO É BOM PARA A NATUREZA",
+                answer: true,
+                image: "https://images.unsplash.com/photo-1566813273-b32c27c4b328?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "PARABÉNS! Economizar energia ajuda muito! ⚡",
+                    incorrect: "Na verdade sim! Apagar a luz economiza energia! ⚡"
+                }
+            },
+            {
+                id: 4,
+                text: "FRUTAS E CASCAS DE BANANA PODEM VIRAR ADUBO PARA AS PLANTAS",
+                answer: true,
+                image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "CERTINHO! Isso se chama compostagem! 🌱",
+                    incorrect: "Sim! Frutas velhas viram adubo e ajudam as plantas! 🌱"
+                }
+            },
+            {
+                id: 5,
+                text: "DEIXAR A GELADEIRA ABERTA NÃO FAZ MAL",
+                answer: false,
+                image: "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "ISSO AÍ! Fechar rápido economiza energia! ❄️",
+                    incorrect: "Ops! Devemos fechar logo para economizar energia! ❄️"
+                }
+            },
+            {
+                id: 6,
+                text: "PLANTAR ÁRVORES E FLORES AJUDA OS ANIMAIS E O AR",
+                answer: true,
+                image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "DEMAIS! As plantas limpam o ar que respiramos! 🦋",
+                    incorrect: "Sim! Plantas são casas para bichinhos e limpam o ar! 🦋"
+                }
+            },
+            {
+                id: 7,
+                text: "POSSO BRINCAR NO BANHO POR MUITO TEMPO",
+                answer: false,
+                image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "CERTINHO! Banhos rápidos economizam água! 💦",
+                    incorrect: "Não! Banhos rápidos economizam muita água! 💦"
+                }
+            },
+            {
+                id: 8,
+                text: "SEPARAR PAPEL E PLÁSTICO AJUDA A RECICLAR",
+                answer: true,
+                image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "MARAVILHA! Reciclar é cuidar do nosso planeta! 🌍",
+                    incorrect: "Sim! Separar o lixo ajuda muito a reciclar! 🌍"
+                }
+            },
+            {
+                id: 9,
+                text: "DAR MEUS BRINQUEDOS VELHOS PARA OUTRA CRIANÇA É LEGAL",
+                answer: true,
+                image: "https://images.unsplash.com/photo-1558877373-1a8d56b82f7f?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "LINDO! Reutilizar coisas é muito importante! 💝",
+                    incorrect: "Sim! Compartilhar brinquedos é sustentável e legal! 💝"
+                }
+            },
+            {
+                id: 10,
+                text: "JOGAR PAPEL NO VASO SANITÁRIO ESTÁ CERTO",
+                answer: false,
+                image: "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&h=400&fit=crop",
+                feedback: {
+                    correct: "BOA! Papel vai na lixeira, não no vaso! 🎯",
+                    incorrect: "Não! Papel higiênico pode ir no vaso, mas lixo não! 🎯"
+                }
+            }
+        ];
+
+        // Estado do jogo
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        // Inicializar o jogo
+        function init() {
+            loadQuestion();
+        }
+
+        // Carregar pergunta atual
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionText').textContent = question.text;
+            document.getElementById('questionImage').src = question.image;
+            document.getElementById('questionCounter').textContent = `Pergunta ${currentQuestion + 1} de ${questions.length}`;
+            document.getElementById('scoreDisplay').textContent = score;
+            
+            // Atualizar barra de progresso
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Mostrar botões de resposta
+            document.getElementById('answerButtons').classList.remove('hidden');
+            document.getElementById('feedbackContainer').classList.add('hidden');
+        }
+
+        // Lidar com resposta
+        function handleAnswer(answer) {
+            selectedAnswer = answer;
+            const question = questions[currentQuestion];
+            const isCorrect = answer === question.answer;
+            
+            if (isCorrect) {
+                score++;
+                document.getElementById('scoreDisplay').textContent = score;
+            }
+            
+            // Mostrar feedback
+            const feedbackEl = document.getElementById('feedbackMessage');
+            feedbackEl.textContent = isCorrect ? question.feedback.correct : question.feedback.incorrect;
+            feedbackEl.className = 'feedback-message ' + (isCorrect ? 'feedback-correct' : 'feedback-incorrect');
+            
+            // Trocar visibilidade
+            document.getElementById('answerButtons').classList.add('hidden');
+            document.getElementById('feedbackContainer').classList.remove('hidden');
+            
+            // Atualizar botão próxima
+            const nextBtn = document.querySelector('#feedbackContainer .next-button');
+            nextBtn.textContent = currentQuestion < questions.length - 1 ? 'PRÓXIMA ➜' : 'VER RESULTADO 🎉';
+        }
+
+        // Próxima pergunta
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Mostrar resultados
+        function showResults() {
+            document.getElementById('questionScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            document.getElementById('finalScore').textContent = `${score} de ${questions.length}`;
+            
+            let message;
+            if (score >= 8) {
+                message = "🌟 INCRÍVEL! Você sabe muito sobre sustentabilidade!";
+            } else if (score >= 5) {
+                message = "🌱 MUITO BOM! Continue aprendendo!";
+            } else {
+                message = "🌈 QUE LEGAL! Agora você sabe mais sobre cuidar do planeta!";
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        // Reiniciar jogo
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('questionScreen').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        // Iniciar quando a página carregar
+        window.onload = init;
+    </script>
+</body>
+</html>
